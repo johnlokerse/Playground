@@ -19,6 +19,16 @@
             "metadata": {
                 "description": "The definition of the used SKU for a storage account."
             }
+        },
+        "skuVM": {
+            "type": "string",
+            "defaultValue": "Standard_B1s",
+            "allowedValues": [
+                "Standard_B1s"
+            ],
+            "metadata": {
+                "description": "description"
+            }
         }
     },
     "functions": [],
@@ -26,7 +36,10 @@
         "storageAccountName": "[concat(parameters('prefix'), '-sa')]",
         "publicIPName": "[concat(parameters('prefix'), '-publicip')]",
         "nsgName": "[concat(parameters('prefix'), '-nsg')]",
-        "vnetName": "[concat(parameters('prefix'), '-vnet')]"
+        "vnetName": "[concat(parameters('prefix'), '-vnet')]",
+        "subnetName": "[concat(parameters('prefix'), '-subnet')]",
+        "nicName": "[concat(parameters('prefix'), '-nic')]",
+        "ipConfigName": "[concat(parameters('prefix'), '-ipconfig')]"
     },
     "resources": [
         {
@@ -87,10 +100,10 @@
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'vm-01-nsg')]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
             ],
             "tags": {
-                "displayName": "vm-01-VirtualNetwork"
+                "displayName": "[concat(parameters('prefix'), '-vnet')]"
             },
             "properties": {
                 "addressSpace": {
@@ -100,11 +113,11 @@
                 },
                 "subnets": [
                     {
-                        "name": "vm-01-VirtualNetwork-Subnet",
+                        "name": "[variables('subnetName')]",
                         "properties": {
                             "addressPrefix": "10.0.0.0/24",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'vm-01-nsg')]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
                             }
                         }
                     }
@@ -112,28 +125,28 @@
             }
         },
         {
-            "name": "vm-01-NetworkInterface",
+            "name": "[variables('nicName')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', 'vm-01-PublicIP')]",
-                "[resourceId('Microsoft.Network/virtualNetworks', 'vm-01-VirtualNetwork')]"
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
             ],
             "tags": {
-                "displayName": "vm-01-NetworkInterface"
+                "displayName": "[concat(parameters('prefix'), '-nic')]"
             },
             "properties": {
                 "ipConfigurations": [
                     {
-                        "name": "ipConfig1",
+                        "name": "[variables('ipConfigName')]",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'vm-01-PublicIP')]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPName'))]"
                             },
                             "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'vm-01-VirtualNetwork', 'vm-01-VirtualNetwork-Subnet')]"
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
                             }
                         }
                     }
@@ -141,23 +154,23 @@
             }
         },
         {
-            "name": "vm-01",
+            "name": "[parameters('prefix')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', 'vm-01-NetworkInterface')]"
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
             ],
             "tags": {
-                "displayName": "vm-01"
+                "displayName": "[parameters('prefix')]"
             },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "Standard_A2_v2"
+                    "vmSize": "[parameters('skuVM')]"
                 },
                 "osProfile": {
-                    "computerName": "vm-01",
-                    "adminUsername": "adminUsername",
+                    "computerName": "[parameters('prefix')]",
+                    "adminUsername": "john",
                     "adminPassword": "adminPassword"
                 },
                 "storageProfile": {
@@ -168,7 +181,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "vm-01-OSDisk",
+                        "name": "[concat(parameters('prefix'), '-OSDisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
                     }
@@ -176,14 +189,14 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', 'vm-01-NetworkInterface')]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
                         }
                     ]
                 },
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', toLower('vm-01storage'))).primaryEndpoints.blob]"
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', toLower(variables('storageAccountName')))).primaryEndpoints.blob]"
                     }
                 }
             }
