@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Init variables
+# Init script variables
 . ./variables.sh
 
 az group create --name $rgName --location $location

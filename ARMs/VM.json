@@ -1,49 +1,73 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "defaultValue": "vm01",
+            "metadata": {
+                "description": "Prefix for every resource."
+            }
+        },
+        "skuStorageAccount": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "The definition of the used SKU for a storage account."
+            }
+        }
+    },
     "functions": [],
-    "variables": {},
+    "variables": {
+        "storageAccountName": "[concat(parameters('prefix'), '-sa')]",
+        "publicIPName": "[concat(parameters('prefix'), '-publicip')]",
+        "nsgName": "[concat(parameters('prefix'), '-nsg')]",
+        "vnetName": "[concat(parameters('prefix'), '-vnet')]"
+    },
     "resources": [
         {
-            "name": "[toLower('vm-01storage')]",
+            "name": "[toLower(variables('storageAccountName'))]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[resourceGroup().location]",
             "tags": {
-                "displayName": "vm-01 Storage Account"
+                "displayName": "[concat(parameters('prefix'), '-StorageAccount')]"
             },
             "sku": {
-                "name": "Standard_LRS"
+                "name": "[parameters('skuStorageAccount')]"
             },
             "kind": "Storage"
         },
         {
-            "name": "vm-01-PublicIP",
+            "name": "[variables('publicIPName')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
             "tags": {
-                "displayName": "PublicIPAddress"
+                "displayName": "[concat(parameters('prefix'), '-PublicIPAddress')]"
             },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower('vm-01')]"
+                    "domainNameLabel": "[toLower(parameters('prefix'))]"
                 }
             }
         },
         {
-            "name": "vm-01-nsg",
+            "name": "[variables('nsgName')]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2018-08-01",
             "location": "[resourceGroup().location]",
             "properties": {
                 "securityRules": [
                     {
-                        "name": "nsgRule1",
+                        "name": "sshRule",
                         "properties": {
-                            "description": "description",
+                            "description": "This rule opens port 22 for SSH",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
                             "destinationPortRange": "22",
@@ -58,7 +82,7 @@
             }
         },
         {
-            "name": "vm-01-VirtualNetwork",
+            "name": "[variables('vnetName')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
