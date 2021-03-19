@@ -5,3 +5,6 @@
 
 az group create --name $rgName --location $location
 az deployment group create --resource-group $rgName --template-uri $templateLocation
+
+# Get ObjectId for user
+ az ad user show --id "johnl@delta-n.nl" --query "objectId"

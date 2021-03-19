@@ -9,6 +9,18 @@
                 "description": "Prefix for every resource."
             }
         },
+        "userObjectId": {
+            "type": "string",
+            "metadata": {
+                "description": "Object Id is needed for Keyvault access policies"
+            }
+        },
+        "adminPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "Admin password for the VM. Will be stored inside KV."
+            }
+        },
         "skuStorageAccount": {
             "type": "string",
             "defaultValue": "Standard_LRS",
@@ -39,7 +51,8 @@
         "vnetName": "[concat(parameters('prefix'), '-vnet')]",
         "subnetName": "[concat(parameters('prefix'), '-subnet')]",
         "nicName": "[concat(parameters('prefix'), '-nic')]",
-        "ipConfigName": "[concat(parameters('prefix'), '-ipconfig')]"
+        "ipConfigName": "[concat(parameters('prefix'), '-ipconfig')]",
+        "kvName": "[concat('kv-', skip(resourceGroup().Name, 3))]"
     },
     "resources": [
         {
@@ -171,7 +184,7 @@
                 "osProfile": {
                     "computerName": "[parameters('prefix')]",
                     "adminUsername": "john",
-                    "adminPassword": "adminPassword"
+                    "adminPassword": "[parameters('adminPassword')]"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -200,6 +213,53 @@
                     }
                 }
             }
+        },
+        {
+            "name": "[variables('kvName')]",
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('kvName')]"
+            },
+            "properties": {
+                "enabledForDeployment": true,
+                "enabledForTemplateDeployment": true,
+                "enabledForDiskEncryption": true,
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[parameters('userObjectId')]",
+                        "permissions": {
+                            "keys": [
+                                "Get"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "Set"
+                            ]
+                        }
+                    }
+                ],
+                "sku": {
+                    "name": "standard",
+                    "family": "A"
+                }
+            },
+            "resources": [
+                {
+                    "type": "secrets",
+                    "name": "[concat(parameters('prefix'), '-password')]",
+                    "apiVersion": "2016-10-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
+                    ],
+                    "properties": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                }
+            ]
         }
     ],
     "outputs": {}
