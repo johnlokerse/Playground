@@ -33,7 +33,18 @@ create_serviceprincipal () {
     fi    
 }
 
-generate_password() {
+get_objectid () {
+    local user_arg=$1
+
+    if [ -z "$user_arg" ]; then
+        echo "User argument not found."
+        exit 1
+    fi
+
+    az ad user show --id $1 --query "objectId"
+}
+
+generate_password () {
     local length_arg=$1
 
     if [ -z "$length_arg" ]; then

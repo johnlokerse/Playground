@@ -8,7 +8,7 @@ source ./utils.sh
 # az deployment group create --resource-group $rgName --template-uri $templateLocation
 
 # Get ObjectId for user
-#  az ad user show --id "johnl@delta-n.nl" --query "objectId"
+object_id=$(get_objectid "johnl@delta-n.nl")
 
 # Generate password
 password=$(generate_password 10)
