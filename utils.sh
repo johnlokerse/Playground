@@ -53,3 +53,6 @@ generate_password () {
 
     openssl rand -base64 $length_arg
 }
+
+# Reset debugger
+set +xe
