@@ -47,6 +47,11 @@ get_objectid () {
 generate_password () {
     local length_arg=$1
 
+    if ! command -v openssl &> /dev/null; then
+        echo "OpenSSL command was not found."
+        exit 1
+    fi
+
     if [ -z "$length_arg" ]; then
         local length_arg=10
     fi
