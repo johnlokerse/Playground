@@ -1,3 +1,3 @@
 location="westeurope"
 rgName="rg-playground"
-templateLocation="ARMs\VM.json"
+templateLocation="ARMs/VM.json"
