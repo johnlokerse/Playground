@@ -22,11 +22,15 @@ jobs:
         shell: sh
 
       - name: "Deploy vm: vmjohn01"
-        run: $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }} "vmjohn01" ["10.0.0.0/16"]
+        run:
+          $parameterLocation=$GITHUB_WORKSPACE/arms/params/vm01.parameters.json
+          $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }}
         shell: sh
 
       - name: "Deploy vm: vmjohn02"
-        run: $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }} "vmjohn02" ["10.1.0.0/16"]
+        run: |
+          $parameterLocation=$GITHUB_WORKSPACE/arms/params/vm02.parameters.json
+          $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }}
         shell: sh
 
       - name: "List all vms"
