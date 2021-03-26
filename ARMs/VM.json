@@ -4,7 +4,7 @@
     "parameters": {
         "prefix": {
             "type": "string",
-            "defaultValue": "vm01",
+            "defaultValue": "vmjohn01",
             "metadata": {
                 "description": "Prefix for every resource."
             }
@@ -45,7 +45,7 @@
     },
     "functions": [],
     "variables": {
-        "storageAccountName": "[concat(parameters('prefix'), 'sajohn')]",
+        "storageAccountName": "[concat(parameters('prefix'), 'sa')]",
         "publicIPName": "[concat(parameters('prefix'), '-publicip')]",
         "nsgName": "[concat(parameters('prefix'), '-nsg')]",
         "vnetName": "[concat(parameters('prefix'), '-vnet')]",
