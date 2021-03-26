@@ -20,4 +20,4 @@ if $? -gt 0 &> /dev/null; then
 fi
 
 header "Deploying arm template"
-az deployment group create --resource-group $rgName --template-uri $templateLocation --parameters adminPassword=$password userObjectId=$object_id
+az deployment group create --resource-group $rgName --template-file $templateLocation --parameters adminPassword=$password userObjectId=$object_id
