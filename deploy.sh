@@ -13,6 +13,10 @@ az group create --name $rgName --location $location
 # Generate password
 password=$(generate_password 10)
 
+echo $1
+echo $2
+echo $3
+
 header "Validating ARM template"
 validate_arm=$(az deployment group validate --resource-group $rgName --template-file $templateLocation --parameters prefix=$vmName adminPassword=$password userObjectId=$object_id vnetAddressPrefix=$addressPrefix)
 if $? -gt 0 &> /dev/null; then
