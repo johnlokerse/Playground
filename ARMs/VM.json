@@ -10,13 +10,13 @@
             }
         },
         "userObjectId": {
-            "type": "string",
+            "type": "securestring",
             "metadata": {
                 "description": "Object Id is needed for Keyvault access policies"
             }
         },
         "adminPassword": {
-            "type": "string",
+            "type": "securestring",
             "metadata": {
                 "description": "Admin password for the VM. Will be stored inside KV."
             }
