@@ -21,6 +21,14 @@ jobs:
         run: chmod 754 *.sh
         shell: sh
 
-      - name: Run deploy.sh
-        run: $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }}
+      - name: "Deploy vm: vmjohn01"
+        run: $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }} "vmjohn01"
+        shell: sh
+
+      - name: "Deploy vm: vmjohn02"
+        run: $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }} "vmjohn02"
+        shell: sh
+
+      - name: "List all vms"
+        run: az vm list --query [].id -o tsv
         shell: sh
