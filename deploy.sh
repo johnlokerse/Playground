@@ -7,7 +7,7 @@ source ./utils.sh
 az group create --name $rgName --location $location
 
 # Get ObjectId for user
-object_id=$(get_objectid "johnl@delt`a-n.nl")
+object_id=$(get_objectid "johnl@delta-n.nl")
 
 # Generate password
 password=$(generate_password 10)
