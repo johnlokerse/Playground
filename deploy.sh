@@ -1,5 +1,6 @@
 #!/bin/bash
 
+object_id=$1
 vmName=$2
 addressPrefix=$3
 
@@ -8,9 +9,6 @@ source ./variables.sh
 source ./utils.sh
 
 az group create --name $rgName --location $location
-
-# Get ObjectId for user
-object_id=$1
 
 # Generate password
 password=$(generate_password 10)
