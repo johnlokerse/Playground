@@ -22,5 +22,5 @@ jobs:
         shell: sh
 
       - name: Run deploy.sh
-        run: $GITHUB_WORKSPACE/deploy.sh
+        run: $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }}
         shell: sh

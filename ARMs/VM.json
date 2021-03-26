@@ -52,7 +52,7 @@
         "subnetName": "[concat(parameters('prefix'), '-subnet')]",
         "nicName": "[concat(parameters('prefix'), '-nic')]",
         "ipConfigName": "[concat(parameters('prefix'), '-ipconfig')]",
-        "kvName": "[concat('kv-', skip(resourceGroup().Name, 3))]"
+        "kvName": "[concat('kv-johndn', skip(resourceGroup().Name, 3))]"
     },
     "resources": [
         {
@@ -232,12 +232,10 @@
                         "tenantId": "[subscription().tenantId]",
                         "objectId": "[parameters('userObjectId')]",
                         "permissions": {
-                            "keys": [
-                                "Get"
-                            ],
                             "secrets": [
-                                "Get",
-                                "Set"
+                                "list",
+                                "get",
+                                "set"
                             ]
                         }
                     }
@@ -256,7 +254,10 @@
                         "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
                     ],
                     "properties": {
-                        "value": "[parameters('adminPassword')]"
+                        "value": "[parameters('adminPassword')]",
+                        "attributes": {
+                            "enabled": true
+                        }
                     }
                 }
             ]
