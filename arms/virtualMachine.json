@@ -39,7 +39,13 @@
                 "Standard_B1s"
             ],
             "metadata": {
-                "description": "description"
+                "description": "SKU of the VM"
+            }
+        },
+        "vnetAddressPrefix": {
+            "type": "array",
+            "metadata": {
+                "description": "addressPrefix of VNET"
             }
         }
     },
@@ -120,15 +126,13 @@
             },
             "properties": {
                 "addressSpace": {
-                    "addressPrefixes": [
-                        "10.0.0.0/16"
-                    ]
+                    "addressPrefixes": "[parameters('vnetAddressPrefix')]"
                 },
                 "subnets": [
                     {
                         "name": "[variables('subnetName')]",
                         "properties": {
-                            "addressPrefix": "10.0.0.0/24",
+                            "addressPrefix": "[concat(split(parameters('vnetAddressPrefix')[0], '/')[0], '/24')]",
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
                             }
