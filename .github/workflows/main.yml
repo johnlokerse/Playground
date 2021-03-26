@@ -23,13 +23,13 @@ jobs:
 
       - name: "Deploy vm: vmjohn01"
         run:
-          $parameterLocation=$GITHUB_WORKSPACE/arms/params/vm01.parameters.json
+          parameterLocation=./arms/params/vm01.parameters.json
           $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }}
         shell: sh
 
       - name: "Deploy vm: vmjohn02"
         run: |
-          $parameterLocation=$GITHUB_WORKSPACE/arms/params/vm02.parameters.json
+          parameterLocation=./arms/params/vm02.parameters.json
           $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }}
         shell: sh
 
