@@ -1,0 +1,28 @@
+name: 'research development pipeline'
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - provisioning/arm/subscription/*
+    
+stages:
+- stage: build
+  displayName: build
+  jobs:
+  - job: build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - publish: $(System.DefaultWorkingDirectory)/
+      artifact: cicd
+  
+- template: release.azure-pipelines.yml
+  parameters:
+    environment: 'nonprod'
+    displayName: 'Non Prod'
+    dependsOn: 'build'
+    confileFile: 'researchanddevelopment.config'
+    serviceConnection: 'az-000-managementgroup-cloudfoundation-owner'
+    scriptName: 'researchanddevelopment.sh'
