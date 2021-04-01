@@ -67,7 +67,7 @@
         "subnetName": "[concat(parameters('prefix'), '-subnet')]",
         "nicName": "[concat(parameters('prefix'), '-nic')]",
         "ipConfigName": "[concat(parameters('prefix'), '-ipconfig')]",
-        "kvName": "[concat('kv-johndn', uniqueString(resourceGroup().id))]"
+        "kvName": "[concat('kv-johndn', skip(resourceGroup().Name, 3))]"
     },
     "resources": [
         {
