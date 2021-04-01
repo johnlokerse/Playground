@@ -2,7 +2,7 @@ name: Setup infrastructure
 
 on:
   push:
-    branches: [none]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -21,14 +21,8 @@ jobs:
         run: chmod 754 *.sh
         shell: sh
 
-      - name: "Deploy vm: vmjohn01"
-        run: parameterLocation=./arms/params/vm01.parameters.json
-          $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }}
-        shell: sh
-
-      - name: "Deploy vm: vmjohn02"
+      - name: "Deploy virtual machines"
         run: |
-          parameterLocation=./arms/params/vm02.parameters.json
           $GITHUB_WORKSPACE/deploy.sh ${{ secrets.OBJ_ID }}
         shell: sh
 
