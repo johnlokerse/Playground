@@ -4,7 +4,7 @@
     "parameters": {
         "amountOfVMs": {
             "type": "int",
-            "defaultValue": "2",
+            "defaultValue": 2,
             "metadata": {
                 "description": "The amount of VMs to deploy."
             }
@@ -48,6 +48,12 @@
             "metadata": {
                 "description": "SKU of the VM"
             }
+        },
+        "vnetAddressPrefix": {
+            "type": "array"
+        },
+        "subnetAddressPrefix": {
+            "type": "array"
         }
     },
     "functions": [],
@@ -81,7 +87,7 @@
             "kind": "Storage"
         },
         {
-            "name": "[variables('publicIPName')]",
+            "name": "[concat(variables('publicIPName'), copyIndex())]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
@@ -93,10 +99,15 @@
                 "dnsSettings": {
                     "domainNameLabel": "[toLower(parameters('prefix'))]"
                 }
+            },
+            "copy": {
+                "name": "publicipcopy",
+                "mode": "Parallel",
+                "count": "[parameters('amountOfVMs')]"
             }
         },
         {
-            "name": "[variables('nsgName')]",
+            "name": "[concat(variables('nsgName'), copyIndex())]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2018-08-01",
             "location": "[resourceGroup().location]",
@@ -117,44 +128,54 @@
                         }
                     }
                 ]
+            },
+            "copy": {
+                "name": "nsgcopy",
+                "mode": "Parallel",
+                "count": "[parameters('amountOfVMs')]"
             }
         },
         {
-            "name": "[variables('vnetName')]",
+            "name": "[concat(variables('vnetName'), copyIndex())]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('nsgName'), copyIndex()))]"
             ],
             "tags": {
                 "displayName": "[concat(parameters('prefix'), '-vnet')]"
             },
             "properties": {
                 "addressSpace": {
-                    "addressPrefixes": [ "10.0.0.0/16" ]
+                    "addressPrefixes": [ "[parameters('vnetAddressPrefix')[copyIndex()]]" ]
                 },
                 "subnets": [
                     {
-                        "name": "[variables('subnetName')]",
+                        "name": "[concat(variables('subnetName'), copyIndex())]",
                         "properties": {
-                            "addressPrefix": "10.0.0.0/24",
+                            "addressPrefix": "[parameters('subnetAddressPrefix')[copyIndex()]]",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('nsgName'), copyIndex()))]"
                             }
                         }
                     }
                 ]
+            },
+            "copy": {
+                "name": "vnetcopy",
+                "mode": "Parallel",
+                "count": "[parameters('amountOfVMs')]"
             }
         },
         {
-            "name": "[variables('nicName')]",
+            "name": "[concat(variables('nicName'), copyIndex())]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPName'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+                "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPName'), copyIndex()))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('vnetName'), copyIndex()))]"
             ],
             "tags": {
                 "displayName": "[concat(parameters('prefix'), '-nic')]"
@@ -162,27 +183,32 @@
             "properties": {
                 "ipConfigurations": [
                     {
-                        "name": "[variables('ipConfigName')]",
+                        "name": "[concat(variables('ipConfigName'), copyIndex())]",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPName'))]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPName'), copyIndex()))]"
                             },
                             "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('vnetName'), copyIndex()), concat(variables('subnetName'), copyIndex()))]"
                             }
                         }
                     }
                 ]
+            },
+            "copy": {
+                "name": "niccopy",
+                "mode": "Parallel",
+                "count": "[parameters('amountOfVMs')]"
             }
         },
         {
-            "name": "[parameters('prefix')]",
+            "name": "[concat(parameters('prefix'), copyIndex())]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyIndex()))]"
             ],
             "tags": {
                 "displayName": "[parameters('prefix')]"
@@ -212,16 +238,21 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyIndex()))]"
                         }
                     ]
                 },
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', toLower(variables('storageAccountName')))).primaryEndpoints.blob]"
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', toLower(concat(variables('storageAccountName'), copyIndex())))).primaryEndpoints.blob]"
                     }
                 }
+            },
+            "copy": {
+                "name": "vmcopy",
+                "mode": "Parallel",
+                "count": "[parameters('amountOfVMs')]"
             }
         },
         {
@@ -259,7 +290,7 @@
             "resources": [
                 {
                     "type": "secrets",
-                    "name": "[concat(parameters('prefix'), '-password')]",
+                    "name": "adminpassword",
                     "apiVersion": "2016-10-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
