@@ -99,7 +99,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(parameters('prefix'))]"
+                    "domainNameLabel": "[toLower(concat(parameters('prefix'), copyIndex()))]"
                 }
             },
             "copy": {
@@ -232,7 +232,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat(parameters('prefix'), '-OSDisk')]",
+                        "name": "[concat(parameters('prefix'), '-OSDisk', copyIndex())]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
                     }
