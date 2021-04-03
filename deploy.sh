@@ -22,6 +22,6 @@ echo "validation done - OK"
 header "Deploying ARM template"
 az deployment group create --resource-group $rgName --template-file $templateLocation --parameters $parameterLocation --parameters adminPassword=$password userObjectId=$object_id
 
-# Add a two-way peering
+# Add a two-way network peering
 az network vnet peering create --resource-group $rgName --name vnet0-vnet1-peering --vnet-name vmjohn-vnet0 --remote-vnet vmjohn-vnet1 --allow-vnet-access
 az network vnet peering create --resource-group $rgName --name vnet1-vnet0-peering --vnet-name vmjohn-vnet1 --remote-vnet vmjohn-vnet0 --allow-vnet-access
