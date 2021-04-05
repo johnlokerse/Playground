@@ -1,2 +1,2 @@
 # Playground
-For git, arm templates , actions and such stuff.
+For git, arm templates, bicep, actions and such stuff.
