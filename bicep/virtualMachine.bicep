@@ -74,9 +74,6 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2020-11-01' = {
 resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = {
   name: vnetName
   location: resourceGroup().location
-  dependsOn: [
-    nsg
-  ]
   tags: {
     'displayName': vnetName
   }
@@ -103,10 +100,6 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = {
 resource nic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: nicName
   location: resourceGroup().location
-  dependsOn: [
-    pip
-    vnet
-  ]
   tags: {
     'displayName': nicName
   }
@@ -131,9 +124,6 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
 resource vm 'Microsoft.Compute/virtualMachines@2020-12-01' = {
   name: prefixName
   location: resourceGroup().location
-  dependsOn: [
-    nic
-  ]
   tags: {
     'displayName': 'virtualMachine-${prefixName}'
   }
