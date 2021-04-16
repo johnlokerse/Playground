@@ -13,13 +13,13 @@ param skuVM string = 'Standard_B1s'
 @description('Administrator password VM')
 param adminPassword string
 
-var storageAccountName = concat(prefixName, 'sa')
-var publicIPName = concat(prefixName, '-publicip')
-var nsgName = concat(prefixName, '-nsg')
-var vnetName = concat(prefixName, '-vnet')
-var subnetName = concat(prefixName, '-subnet')
-var nicName = concat(prefixName, '-nic')
-var ipConfigName = concat(prefixName, '-ipconfig')
+var storageAccountName = '${prefixName}-sa'
+var publicIPName = '${prefixName}-publicip'
+var nsgName = '${prefixName}-nsg'
+var vnetName = '${prefixName}-vnet'
+var subnetName = '${prefixName}-subnet'
+var nicName = '${prefixName}-nic'
+var ipConfigName = '${prefixName}-ipconfig'
 
 resource sa 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   name: storageAccountName
@@ -43,7 +43,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2020-11-01' = {
   properties: {
     publicIPAllocationMethod: 'Dynamic'
     dnsSettings: {
-      domainNameLabel: toLower(concat(prefixName))
+      domainNameLabel: toLower(prefixName)
     }
   }
 }
@@ -135,7 +135,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2020-12-01' = {
     nic
   ]
   tags: {
-    'displayName': concat('virtualMachine-', prefixName)
+    'displayName': 'virtualMachine-${prefixName}'
   }
   properties: {
     hardwareProfile: {
@@ -154,7 +154,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2020-12-01' = {
         version: 'latest'
       }
       osDisk: {
-        name: concat(prefixName, '-OSDisk')
+        name: '${prefixName}-OSDisk'
         caching: 'ReadWrite'
         createOption: 'FromImage'
       }
