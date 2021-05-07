@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy bicep file
         run: |
-          $GITHUB_WORKSPACE/bicep/deploy-bicep.sh
+          $GITHUB_WORKSPACE/bicep/scripts/deploy-bicep.sh
 
       - name: List VMs
         run: az vm list --query [].id -o tsv
