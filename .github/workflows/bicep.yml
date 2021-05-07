@@ -1,0 +1,27 @@
+name: Setup infrastructure using Bicep
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Make shell scripts executable
+        run: chmod 754 $GITHUB_WORKSPACE/bicep/scripts/*.sh
+        shell: sh
+
+      - name: Deploy bicep file
+        run: |
+          $GITHUB_WORKSPACE/bicep/deploy-bicep.sh
+
+      - name: List VMs
+        run: az vm list --query [].id -o tsv
+        shell: sh
