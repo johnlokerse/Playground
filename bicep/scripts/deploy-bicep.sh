@@ -1,5 +1,5 @@
 source ./variables-bicep.sh
-source ../utils.sh
+source ../../utils.sh
 
 password=$(generate_password 10)
 
@@ -8,7 +8,7 @@ az group create --name $rgName --location $location
 
 header "Deploying Bicep file"
 az deployment group create \
-    --name bicep-deployment
+    --name bicep-deployment \
     --resource-group $rgName \
     --template-file ..\virtualMachine.bicep \
     --parameters adminPassword="$password"
