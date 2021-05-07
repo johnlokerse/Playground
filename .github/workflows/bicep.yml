@@ -18,6 +18,10 @@ jobs:
         run: |
           pwd $GITHUB_WORKSPACE
           ls -alh $GITHUB_WORKSPACE
+          pwd $GITHUB_WORKSPACE/bicep
+          ls -alh $GITHUB_WORKSPACE/bicep
+          pwd $GITHUB_WORKSPACE/bicep/scripts
+          ls -alh $GITHUB_WORKSPACE/bicep/scripts
 
       - name: Make shell scripts executable
         run: chmod 754 $GITHUB_WORKSPACE/bicep/scripts/*.sh
