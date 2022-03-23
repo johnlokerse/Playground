@@ -6,5 +6,3 @@ resource myKv 'Microsoft.KeyVault/vaults@2021-11-01-preview' existing = {
   name: 'kv-john-2022'
   scope: resourceGroup(subId, rgName)
 }
-
-output mySecret string = myKv.getSecret('my-secret')
